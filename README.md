@@ -1,72 +1,66 @@
 **GlowMatch — Skincare Recommendation Web App**
 
-GlowMatch is a modern, responsive web-based skincare recommendation system that helps users discover personalized skincare products based on their skin type, concerns, and preferences.
+GlowMatch is a responsive web-based skincare recommendation system that helps users discover personalized skincare products based on their skin type, concerns, and preferences.
 
 It provides an interactive quiz experience and generates tailored product suggestions with direct purchase links.
 
-**🌐 Project Overview**
+**Project Overview**
 
 GlowMatch consists of three main sections:
 
-**Landing Page** – Introduces the app and encourages users to start the quiz
-**Quiz Page** – Collects user input through multiple-step questions
-**Results Page** – Displays personalized skincare recommendations
+Landing Page – Introduces the application and allows users to start the quiz
+Quiz Page – Collects user input through a multi-step questionnaire
+Results Page – Displays personalized skincare product recommendations
 
 The application is fully frontend-based and built using HTML, CSS, and JavaScript.
 
-**🚀 Features**
-🧬 Personalized skincare recommendations
-📊 Multi-step interactive quiz (8 steps)
-🎯 Skin type, concerns, goals, and budget analysis
-🛍️ Product suggestions with Amazon links
-🎨 Modern UI with smooth animations
-📱 Fully responsive design
+**Features**
+Personalized skincare recommendations
+Multi-step interactive quiz (8 questions)
+Analysis of skin type, concerns, goals, and budget
+Product suggestions with external purchase links
+Clean and modern user interface
+Fully responsive design
 
-**🛠️ Technologies Used**
-**HTML5** – Structure of the web app
-**CSS3** – Styling, layout, and animations
-**JavaScript (Vanilla JS)** – Logic and interactivity
+**Technologies Used**
+HTML5 – Structure of the application
+CSS3 – Styling and layout
+JavaScript (Vanilla JS) – Functionality and logic
 
-**📂 Project Structure**
+**Project Structure**
 GlowMatch/
 │
-├── glowmatch.html  
-└── README.md 
+├── glowmatch.html   
+└── README.md        
 
-**⚙️ How It Works**
-User lands on the homepage
-Clicks "Start Your Skin Quiz"
 
-**Answers 8 questions about:**
+**How It Works**
+User opens the application
+Starts the skincare quiz
+Answers questions related to:
 Skin type
-Tone & undertone
-Concerns & conditions
-Goals & budget
-System processes answers
-Personalized product recommendations are displayed
+Tone and undertone
+Skin concerns and conditions
+Skincare goals and budget
+System processes the responses
+Relevant product recommendations are displayed
+Recommendation Logic
+Each product is associated with specific tags
+User responses are matched with these tags
+Products are ranked based on relevance
+The most relevant products are shown first
 
-**🧠 Recommendation Logic**
-Each product has predefined tags
-User answers are matched with product tags
-Products are ranked based on relevance score
-Highest matching products are shown first
+**Limitations**
+No backend integration
+No database (static product list)
+Recommendations are rule-based
 
-**📸 Screens Included**
-Landing Page
-Quiz Interface
-Results & Product Recommendations
+**Future Improvements**
+Database integration (e.g., MySQL, Firebase)
+AI-based recommendation system
+User accounts and saved preferences
+E-commerce integration
+Advanced filtering and analytics
 
-**⚠️ Limitations**
-❌ No backend integration
-❌ No database (static product data)
-❌ Recommendations are rule-based (not AI-powered)
-
-**🔮 Future Improvements**
-🔗 Database integration (MySQL / Firebase)
-🤖 AI-based recommendation system
-👤 User accounts & saved routines
-🛒 E-commerce integration
-📊 Analytics dashboard
-
-**👩‍💻 Authors**
+**Authors**
 Amina Batool
