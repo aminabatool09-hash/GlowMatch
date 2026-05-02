@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GlowMatch — Your Skin. Your Ritual.</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FDF8F4;
+    --primary: #E8A598;
+    --sage: #A8BBA2;
+    --accent: #C4614A;
+    --text: #2E2622;
+    --muted: #8C7B74;
+    --card: #FFFFFF;
+    --border: #F0E0D8;
+    --sage-light: #EBF0E9;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── BLOB BACKGROUNDS ── */
+  .blob-bg {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.18;
+  }
+  .blob-1 { width: 500px; height: 500px; background: var(--primary); top: -100px; right: -100px; }
+  .blob-2 { width: 400px; height: 400px; background: var(--sage); bottom: -80px; left: -80px; }
+  .blob-3 { width: 300px; height: 300px; background: var(--accent); top: 40%; left: 30%; opacity: 0.08; }
+
+  /* ── PAGES ── */
+  .page { display: none; position: relative; z-index: 1; min-height: 100vh; }
+  .page.active { display: flex; flex-direction: column; }
+
+  /* ── NAV ── */
+  nav {
+    padding: 24px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 26px;
+    font-style: italic;
+    font-weight: 400;
+    color: var(--text);
+    letter-spacing: 0.02em;
+  }
+  .logo span { color: var(--accent); }
+  .nav-link {
+    font-size: 13px;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+  .nav-link:hover { color: var(--accent); }
+
+  /* ── LANDING ── */
+  #landing {
+    align-items: center;
+    justify-content: center;
+  }
+  .hero {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 64px;
+    align-items: center;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 48px 48px 80px;
+  }
+  .hero-left { animation: fadeUp 0.8s ease forwards; }
+  .hero-eyebrow {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .hero-eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 24px;
+    height: 1px;
+    background: var(--accent);
+  }
+  h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 72px;
+    font-style: italic;
+    font-weight: 300;
+    line-height: 1.1;
+    color: var(--text);
+    margin-bottom: 24px;
+  }
+  h1 em { color: var(--accent); font-style: italic; }
+  .hero-sub {
+    font-size: 17px;
+    line-height: 1.7;
+    color: var(--muted);
+    margin-bottom: 40px;
+    max-width: 420px;
+  }
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 16px 36px;
+    border-radius: 100px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    text-decoration: none;
+    letter-spacing: 0.02em;
+  }
+  .btn-primary:hover {
+    background: #b5503a;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(196,97,74,0.28);
+  }
+  .hero-note {
+    margin-top: 16px;
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+  }
+  .hero-note span { margin: 0 6px; opacity: 0.4; }
+
+  .hero-right {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeUp 0.8s 0.2s ease both;
+  }
+  .hero-visual {
+    width: 420px;
+    height: 420px;
+    border-radius: 40% 60% 55% 45% / 45% 40% 60% 55%;
+    background: linear-gradient(135deg, #F5D5CC 0%, #E8C5B8 40%, #D4B5A8 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 100px;
+    position: relative;
+    animation: morphBlob 8s ease-in-out infinite;
+    box-shadow: 0 24px 80px rgba(196,97,74,0.15);
+  }
+  @keyframes morphBlob {
+    0%, 100% { border-radius: 40% 60% 55% 45% / 45% 40% 60% 55%; }
+    33% { border-radius: 55% 45% 40% 60% / 60% 55% 45% 40%; }
+    66% { border-radius: 45% 55% 60% 40% / 40% 60% 55% 45%; }
+  }
+  .floating-chip {
+    position: absolute;
+    background: white;
+    border-radius: 100px;
+    padding: 8px 16px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    white-space: nowrap;
+  }
+  .chip-1 { top: 20px; right: -20px; animation: float1 4s ease-in-out infinite; }
+  .chip-2 { bottom: 40px; left: -30px; animation: float2 4s ease-in-out infinite 1s; }
+  .chip-3 { top: 50%; right: -40px; animation: float1 4s ease-in-out infinite 2s; }
+  @keyframes float1 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+  @keyframes float2 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(8px)} }
+
+  /* features row */
+  .features {
+    max-width: 1100px;
+    margin: 0 auto 80px;
+    padding: 0 48px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    animation: fadeUp 0.8s 0.4s ease both;
+  }
+  .feature-card {
+    background: white;
+    border-radius: 20px;
+    padding: 28px 24px;
+    border: 1px solid var(--border);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .feature-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(196,97,74,0.1);
+  }
+  .feature-icon { font-size: 28px; margin-bottom: 12px; }
+  .feature-title { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+  .feature-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+  /* ── QUIZ PAGE ── */
+  #quiz { justify-content: flex-start; }
+
+  .progress-bar-wrap {
+    height: 4px;
+    background: var(--border);
+    width: 100%;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+    border-radius: 0 4px 4px 0;
+  }
+  .progress-label {
+    text-align: right;
+    padding: 10px 48px 0;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .quiz-center {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 24px 48px;
+  }
+  .quiz-card {
+    background: white;
+    border-radius: 24px;
+    padding: 48px;
+    width: 100%;
+    max-width: 600px;
+    box-shadow: 0 8px 48px rgba(196,97,74,0.1);
+    border: 1px solid var(--border);
+    animation: fadeUp 0.4s ease forwards;
+  }
+  .q-category {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--sage);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .q-category::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--sage-light);
+  }
+  .q-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 34px;
+    font-weight: 400;
+    line-height: 1.25;
+    color: var(--text);
+    margin-bottom: 32px;
+  }
+  .options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 36px;
+  }
+  .option-btn {
+    background: white;
+    border: 1.5px solid var(--border);
+    border-radius: 16px;
+    padding: 16px 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    transition: all 0.2s ease;
+    text-align: left;
+  }
+  .option-btn:hover {
+    border-color: var(--primary);
+    background: #FDF3F1;
+    transform: translateY(-1px);
+  }
+  .option-btn.selected {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+    transform: scale(1.02);
+    box-shadow: 0 6px 20px rgba(196,97,74,0.3);
+  }
+  .option-emoji { font-size: 20px; flex-shrink: 0; }
+  .option-label { line-height: 1.3; }
+  .option-sub { font-size: 11px; opacity: 0.7; font-weight: 400; display: block; margin-top: 2px; }
+
+  .quiz-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .btn-ghost {
+    background: none;
+    border: 1.5px solid var(--border);
+    color: var(--muted);
+    padding: 12px 28px;
+    border-radius: 100px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-ghost:hover { border-color: var(--muted); color: var(--text); }
+  .btn-next {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 14px 36px;
+    border-radius: 100px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s;
+    opacity: 0.45;
+    pointer-events: none;
+  }
+  .btn-next.enabled {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .btn-next.enabled:hover {
+    background: #b5503a;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(196,97,74,0.3);
+  }
+
+  /* multi select hint */
+  .multi-hint {
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 16px;
+    letter-spacing: 0.04em;
+  }
+
+  /* ── RESULTS PAGE ── */
+  #results { flex-direction: column; }
+
+  .results-banner {
+    background: linear-gradient(135deg, #C4614A 0%, #D4826E 50%, #C4614A 100%);
+    padding: 48px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .results-banner::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: radial-gradient(ellipse at 30% 50%, rgba(255,255,255,0.08) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 30%, rgba(255,255,255,0.05) 0%, transparent 50%);
+  }
+  .banner-content { position: relative; z-index: 1; }
+  .results-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 52px;
+    font-style: italic;
+    font-weight: 300;
+    color: white;
+    margin-bottom: 16px;
+  }
+  .profile-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 16px;
+  }
+  .profile-tag {
+    background: rgba(255,255,255,0.2);
+    color: white;
+    padding: 6px 16px;
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    border: 1px solid rgba(255,255,255,0.3);
+    backdrop-filter: blur(4px);
+  }
+  .results-sub {
+    color: rgba(255,255,255,0.75);
+    font-size: 15px;
+  }
+
+  .results-body {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 48px;
+    width: 100%;
+  }
+
+  .filter-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 36px;
+    flex-wrap: wrap;
+  }
+  .filter-pill {
+    padding: 8px 20px;
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1.5px solid var(--border);
+    background: white;
+    color: var(--muted);
+    transition: all 0.2s;
+  }
+  .filter-pill.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+  }
+  .filter-pill:hover:not(.active) {
+    border-color: var(--primary);
+    color: var(--text);
+  }
+
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+
+  .product-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    transition: transform 0.25s, box-shadow 0.25s;
+    animation: fadeUp 0.5s ease both;
+  }
+  .product-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 60px rgba(196,97,74,0.12);
+  }
+  .product-img {
+    width: 100%;
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 72px;
+    transition: transform 0.4s ease;
+  }
+  .product-card:hover .product-img { transform: scale(1.06); }
+  .product-body { padding: 20px 20px 24px; }
+  .product-tags {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+  }
+  .product-tag {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--sage);
+    background: var(--sage-light);
+    padding: 3px 10px;
+    border-radius: 100px;
+  }
+  .product-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 8px;
+    line-height: 1.35;
+  }
+  .product-reason {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
+    font-style: italic;
+    margin-bottom: 16px;
+  }
+  .product-price {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+  .btn-amazon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 13px;
+    border-radius: 100px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+  }
+  .btn-amazon:hover {
+    background: #b5503a;
+    box-shadow: 0 6px 20px rgba(196,97,74,0.3);
+  }
+  .amazon-icon { font-size: 15px; }
+
+  .retake-wrap {
+    text-align: center;
+    padding: 48px;
+  }
+  .btn-retake {
+    background: none;
+    border: 1.5px solid var(--accent);
+    color: var(--accent);
+    padding: 14px 40px;
+    border-radius: 100px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-retake:hover {
+    background: var(--accent);
+    color: white;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    nav { padding: 20px 24px; }
+    .hero { grid-template-columns: 1fr; gap: 40px; padding: 32px 24px 48px; }
+    .hero-right { display: none; }
+    h1 { font-size: 52px; }
+    .features { grid-template-columns: 1fr; padding: 0 24px; }
+    .quiz-card { padding: 32px 24px; }
+    .q-text { font-size: 26px; }
+    .options-grid { grid-template-columns: 1fr; }
+    .results-banner { padding: 32px 24px; }
+    .results-title { font-size: 36px; }
+    .results-body { padding: 32px 24px; }
+    .products-grid { grid-template-columns: 1fr; }
+    .progress-label { padding: 10px 24px 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="blob-bg">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+</div>
+
+<!-- ════════════════════════════════
+     LANDING PAGE
+════════════════════════════════ -->
+<div class="page active" id="landing">
+  <nav>
+    <div class="logo">Glow<span>Match</span></div>
+    <a class="nav-link" onclick="startQuiz()">Take the Quiz</a>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-left">
+      <div class="hero-eyebrow">Personalized Skincare</div>
+      <h1>Your skin.<br><em>Your ritual.</em></h1>
+      <p class="hero-sub">Answer a few questions and discover skincare products made for you — not everyone else.</p>
+      <button class="btn-primary" onclick="startQuiz()">
+        Start Your Skin Quiz
+        <span>→</span>
+      </button>
+      <p class="hero-note">Takes less than 2 minutes <span>·</span> Free <span>·</span> No signup needed</p>
+    </div>
+    <div class="hero-right">
+      <div class="hero-visual" style="position:relative;">
+        🧴
+        <div class="floating-chip chip-1">✨ Oily Skin</div>
+        <div class="floating-chip chip-2">🌿 Korean Brands</div>
+        <div class="floating-chip chip-3">💧 Hydration</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="features">
+    <div class="feature-card">
+      <div class="feature-icon">🧬</div>
+      <div class="feature-title">Personalized to you</div>
+      <div class="feature-desc">We analyze your skin type, concerns, and goals to match you with products that actually work.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🌿</div>
+      <div class="feature-title">Trusted brands only</div>
+      <div class="feature-desc">Curated from K-beauty, drugstore, and luxury brands loved by dermatologists worldwide.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🛒</div>
+      <div class="feature-title">Buy instantly</div>
+      <div class="feature-desc">Every recommendation links directly to Amazon so you can shop without any hassle.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════
+     QUIZ PAGE
+════════════════════════════════ -->
+<div class="page" id="quiz">
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="progressFill" style="width:12.5%"></div>
+  </div>
+  <div class="progress-label" id="progressLabel">Step 1 of 8</div>
+
+  <nav>
+    <div class="logo">Glow<span>Match</span></div>
+    <a class="nav-link" onclick="showPage('landing')">← Back to home</a>
+  </nav>
+
+  <div class="quiz-center">
+    <div class="quiz-card" id="quizCard">
+      <!-- dynamically rendered -->
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════
+     RESULTS PAGE
+════════════════════════════════ -->
+<div class="page" id="results">
+  <nav style="position:relative;z-index:2;">
+    <div class="logo">Glow<span>Match</span></div>
+    <a class="nav-link" onclick="showPage('landing')">Home</a>
+  </nav>
+
+  <div class="results-banner">
+    <div class="banner-content">
+      <div class="results-title">Your Skin Profile</div>
+      <div class="profile-tags" id="profileTags"></div>
+      <div class="results-sub">Here are your top picks, matched to your skin ✨</div>
+    </div>
+  </div>
+
+  <div class="results-body">
+    <div class="filter-bar">
+      <div class="filter-pill active" onclick="filterProducts('all', this)">All</div>
+      <div class="filter-pill" onclick="filterProducts('cleanser', this)">Cleanser</div>
+      <div class="filter-pill" onclick="filterProducts('moisturizer', this)">Moisturizer</div>
+      <div class="filter-pill" onclick="filterProducts('serum', this)">Serum</div>
+      <div class="filter-pill" onclick="filterProducts('sunscreen', this)">Sunscreen</div>
+      <div class="filter-pill" onclick="filterProducts('toner', this)">Toner</div>
+    </div>
+    <div class="products-grid" id="productsGrid"></div>
+  </div>
+
+  <div class="retake-wrap">
+    <button class="btn-retake" onclick="startQuiz()">↺ Retake the Quiz</button>
+  </div>
+</div>
+
+<script>
+// ── QUIZ DATA ──────────────────────────────────────────────
+const questions = [
+  {
+    category: "Skin Type",
+    text: "How does your skin usually feel by midday?",
+    multi: false,
+    options: [
+      { emoji: "🫧", label: "Oily", sub: "Shiny all over", value: "oily" },
+      { emoji: "🏜️", label: "Dry", sub: "Tight or flaky", value: "dry" },
+      { emoji: "🌗", label: "Combination", sub: "Oily T-zone, dry cheeks", value: "combination" },
+      { emoji: "🌸", label: "Sensitive", sub: "Easily irritated", value: "sensitive" }
+    ]
+  },
+  {
+    category: "Skin Tone",
+    text: "What's your skin tone?",
+    multi: false,
+    options: [
+      { emoji: "🤍", label: "Fair", sub: "Light, burns easily", value: "fair" },
+      { emoji: "🤎", label: "Medium", sub: "Warm beige to olive", value: "medium" },
+      { emoji: "🧡", label: "Tan", sub: "Golden to caramel", value: "tan" },
+      { emoji: "🖤", label: "Deep", sub: "Rich brown to ebony", value: "deep" }
+    ]
+  },
+  {
+    category: "Undertone",
+    text: "What's your skin undertone?",
+    multi: false,
+    options: [
+      { emoji: "❄️", label: "Cool", sub: "Pink or bluish veins", value: "cool" },
+      { emoji: "☀️", label: "Warm", sub: "Greenish veins", value: "warm" },
+      { emoji: "🌿", label: "Neutral", sub: "Mix of both", value: "neutral" },
+      { emoji: "🤷", label: "Not sure", sub: "I'll skip this one", value: "unsure" }
+    ]
+  },
+  {
+    category: "Skin Concerns",
+    text: "What are your main skin concerns?",
+    multi: true,
+    options: [
+      { emoji: "🔴", label: "Acne", sub: "Breakouts & pimples", value: "acne" },
+      { emoji: "🌑", label: "Dark Spots", sub: "Post-acne marks", value: "darkspots" },
+      { emoji: "🎨", label: "Pigmentation", sub: "Uneven skin tone", value: "pigmentation" },
+      { emoji: "⏳", label: "Wrinkles", sub: "Fine lines & aging", value: "wrinkles" },
+      { emoji: "💧", label: "Dryness", sub: "Dehydrated skin", value: "dryness" },
+      { emoji: "🌹", label: "Redness", sub: "Inflammation & flush", value: "redness" }
+    ]
+  },
+  {
+    category: "Skin Conditions",
+    text: "Do you have any diagnosed skin conditions?",
+    multi: true,
+    options: [
+      { emoji: "🔵", label: "Eczema", sub: "Itchy, inflamed patches", value: "eczema" },
+      { emoji: "🌺", label: "Rosacea", sub: "Chronic redness", value: "rosacea" },
+      { emoji: "⚡", label: "Psoriasis", sub: "Scaly patches", value: "psoriasis" },
+      { emoji: "✅", label: "None", sub: "No known conditions", value: "none" }
+    ]
+  },
+  {
+    category: "Skincare Goal",
+    text: "What's your #1 skincare goal right now?",
+    multi: false,
+    options: [
+      { emoji: "✨", label: "Glow", sub: "Bright, luminous skin", value: "glow" },
+      { emoji: "🛡️", label: "Anti-aging", sub: "Firm & youthful", value: "antiaging" },
+      { emoji: "🎯", label: "Even tone", sub: "Fade spots & marks", value: "eventone" },
+      { emoji: "💦", label: "Hydration", sub: "Plump & moisturized", value: "hydration" },
+      { emoji: "🚫", label: "Acne control", sub: "Clear, calm skin", value: "acnecontrol" },
+      { emoji: "🌿", label: "Barrier repair", sub: "Soothe & protect", value: "barrier" }
+    ]
+  },
+  {
+    category: "Brand Preference",
+    text: "Which type of brands do you prefer?",
+    multi: true,
+    options: [
+      { emoji: "🇰🇷", label: "K-Beauty", sub: "Korean skincare", value: "korean" },
+      { emoji: "💊", label: "Drugstore", sub: "CeraVe, Neutrogena", value: "drugstore" },
+      { emoji: "💎", label: "Luxury", sub: "La Mer, SK-II", value: "luxury" },
+      { emoji: "🌱", label: "Natural/Organic", sub: "Clean ingredients", value: "natural" }
+    ]
+  },
+  {
+    category: "Budget",
+    text: "What's your skincare budget per product?",
+    multi: false,
+    options: [
+      { emoji: "💰", label: "Budget-friendly", sub: "Under $20", value: "budget" },
+      { emoji: "💳", label: "Mid-range", sub: "$20 – $60", value: "midrange" },
+      { emoji: "💎", label: "Premium", sub: "$60 and above", value: "premium" },
+      { emoji: "🤷", label: "No limit", sub: "If it works, I'll buy it", value: "nolimit" }
+    ]
+  }
+];
+
+// ── PRODUCT DATABASE ───────────────────────────────────────
+const products = [
+  {
+    name: "COSRX Snail Mucin 96% Power Repairing Essence",
+    brand: "K-Beauty · Budget",
+    category: "serum",
+    emoji: "🐌",
+    bg: "#EEF5EC",
+    tags: ["dry", "combination", "korean", "budget", "midrange", "dryness", "darkspots", "hydration", "barrier"],
+    price: "$19.99",
+    reason: "Snail secretion filtrate repairs skin barrier, deeply hydrates, and fades dark spots overnight.",
+    amazon: "https://www.amazon.com/s?k=COSRX+Snail+Mucin+96+Essence"
+  },
+  {
+    name: "CeraVe Foaming Facial Cleanser",
+    brand: "Drugstore · Budget",
+    category: "cleanser",
+    emoji: "🫧",
+    bg: "#E8F0F8",
+    tags: ["oily", "combination", "drugstore", "budget", "acne", "acnecontrol", "barrier"],
+    price: "$14.99",
+    reason: "Ceramides and hyaluronic acid cleanse without stripping — ideal for oily and acne-prone skin.",
+    amazon: "https://www.amazon.com/s?k=CeraVe+Foaming+Facial+Cleanser"
+  },
+  {
+    name: "Laneige Water Sleeping Mask",
+    brand: "K-Beauty · Mid-range",
+    category: "moisturizer",
+    emoji: "💙",
+    bg: "#E8EEF8",
+    tags: ["dry", "sensitive", "korean", "midrange", "dryness", "hydration", "glow"],
+    price: "$29.00",
+    reason: "Overnight water-based mask floods skin with moisture, leaving a plump dewy glow by morning.",
+    amazon: "https://www.amazon.com/s?k=Laneige+Water+Sleeping+Mask"
+  },
+  {
+    name: "Anua Heartleaf Pore Control Cleansing Oil",
+    brand: "K-Beauty · Budget",
+    category: "cleanser",
+    emoji: "🌿",
+    bg: "#EDF5EC",
+    tags: ["oily", "combination", "sensitive", "korean", "budget", "acne", "redness", "acnecontrol"],
+    price: "$22.00",
+    reason: "Heartleaf extract soothes redness and unclogs pores while melting away sunscreen and makeup.",
+    amazon: "https://www.amazon.com/s?k=Anua+Heartleaf+Pore+Control+Cleansing+Oil"
+  },
+  {
+    name: "The Ordinary Niacinamide 10% + Zinc 1%",
+    brand: "Drugstore · Budget",
+    category: "serum",
+    emoji: "🧪",
+    bg: "#F5EEF8",
+    tags: ["oily", "combination", "drugstore", "budget", "acne", "darkspots", "pigmentation", "acnecontrol", "eventone"],
+    price: "$10.80",
+    reason: "High-strength niacinamide visibly reduces blemishes, minimizes pores, and evens skin tone.",
+    amazon: "https://www.amazon.com/s?k=The+Ordinary+Niacinamide+10+Zinc"
+  },
+  {
+    name: "Beauty of Joseon Relief Sun SPF 50+",
+    brand: "K-Beauty · Budget",
+    category: "sunscreen",
+    emoji: "☀️",
+    bg: "#FDF5E6",
+    tags: ["all", "korean", "budget", "midrange", "glow", "eventone", "darkspots", "pigmentation"],
+    price: "$16.00",
+    reason: "Lightweight, no white cast sunscreen that protects against UV rays while giving a natural finish.",
+    amazon: "https://www.amazon.com/s?k=Beauty+of+Joseon+Relief+Sun"
+  },
+  {
+    name: "Klairs Supple Preparation Unscented Toner",
+    brand: "K-Beauty · Mid-range",
+    category: "toner",
+    emoji: "💧",
+    bg: "#E8F5F5",
+    tags: ["sensitive", "dry", "korean", "midrange", "dryness", "redness", "barrier", "hydration"],
+    price: "$24.00",
+    reason: "Fragrance-free toner with beta-glucan and hyaluronic acid calms sensitivity and preps skin.",
+    amazon: "https://www.amazon.com/s?k=Klairs+Supple+Preparation+Unscented+Toner"
+  },
+  {
+    name: "Neutrogena Hydro Boost Water Gel",
+    brand: "Drugstore · Budget",
+    category: "moisturizer",
+    emoji: "🫙",
+    bg: "#E8F5F8",
+    tags: ["oily", "combination", "drugstore", "budget", "midrange", "dryness", "hydration", "glow"],
+    price: "$19.99",
+    reason: "Oil-free gel formula with hyaluronic acid hydrates without clogging pores — perfect for oily skin.",
+    amazon: "https://www.amazon.com/s?k=Neutrogena+Hydro+Boost+Water+Gel"
+  },
+  {
+    name: "Sulwhasoo Concentrated Ginseng Renewing Serum",
+    brand: "Luxury · Premium",
+    category: "serum",
+    emoji: "🌸",
+    bg: "#F8EEE8",
+    tags: ["dry", "medium", "luxury", "premium", "nolimit", "antiaging", "wrinkles", "glow"],
+    price: "$198.00",
+    reason: "6-year-old Korean red ginseng extract visibly firms, lifts, and gives an unparalleled radiant glow.",
+    amazon: "https://www.amazon.com/s?k=Sulwhasoo+Concentrated+Ginseng+Renewing+Serum"
+  }
+];
+
+// ── STATE ─────────────────────────────────────────────────
+let currentStep = 0;
+let answers = {};
+let selectedOptions = new Set();
+
+// ── HELPERS ───────────────────────────────────────────────
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function startQuiz() {
+  currentStep = 0;
+  answers = {};
+  selectedOptions = new Set();
+  showPage('quiz');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = questions[currentStep];
+  selectedOptions = new Set(answers[currentStep] || []);
+
+  const pct = ((currentStep + 1) / questions.length) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = `Step ${currentStep + 1} of ${questions.length}`;
+
+  const multiHint = q.multi ? `<div class="multi-hint">Select all that apply</div>` : '';
+
+  const optionsHTML = q.options.map(opt => `
+    <button class="option-btn ${selectedOptions.has(opt.value) ? 'selected' : ''}"
+            onclick="selectOption('${opt.value}', ${q.multi})">
+      <span class="option-emoji">${opt.emoji}</span>
+      <span class="option-label">
+        ${opt.label}
+        <span class="option-sub">${opt.sub}</span>
+      </span>
+    </button>
+  `).join('');
+
+  const isFirst = currentStep === 0;
+  const isLast = currentStep === questions.length - 1;
+
+  document.getElementById('quizCard').innerHTML = `
+    <div class="q-category">${q.category}</div>
+    <div class="q-text">${q.text}</div>
+    ${multiHint}
+    <div class="options-grid" style="${q.options.length > 4 ? 'grid-template-columns: 1fr 1fr;' : ''}">${optionsHTML}</div>
+    <div class="quiz-actions">
+      <button class="btn-ghost" onclick="${isFirst ? "showPage('landing')" : 'prevStep()'}">${isFirst ? '← Home' : '← Back'}</button>
+      <button class="btn-next ${selectedOptions.size > 0 ? 'enabled' : ''}" id="nextBtn" onclick="nextStep()">
+        ${isLast ? 'See My Results ✨' : 'Next →'}
+      </button>
+    </div>
+  `;
+}
+
+function selectOption(value, multi) {
+  if (multi) {
+    if (value === 'none') {
+      selectedOptions.clear();
+      selectedOptions.add('none');
+    } else {
+      selectedOptions.delete('none');
+      if (selectedOptions.has(value)) selectedOptions.delete(value);
+      else selectedOptions.add(value);
+    }
+  } else {
+    selectedOptions.clear();
+    selectedOptions.add(value);
+  }
+
+  // Re-render option buttons with correct selected state
+  const q = questions[currentStep];
+  document.querySelectorAll('.option-btn').forEach((btn, i) => {
+    const val = q.options[i].value;
+    btn.classList.toggle('selected', selectedOptions.has(val));
+  });
+
+  const nextBtn = document.getElementById('nextBtn');
+  if (selectedOptions.size > 0) nextBtn.classList.add('enabled');
+  else nextBtn.classList.remove('enabled');
+}
+
+// Initialize quiz on first load so the quiz card renders when navigating to it
+document.addEventListener('DOMContentLoaded', () => {
+  // Pre-render quiz so it's ready when user clicks Start
+  currentStep = 0;
+  answers = {};
+});
+
+function nextStep() {
+  if (selectedOptions.size === 0) return;
+  answers[currentStep] = [...selectedOptions];
+  if (currentStep < questions.length - 1) {
+    currentStep++;
+    renderQuestion();
+  } else {
+    showResults();
+  }
+}
+
+function prevStep() {
+  if (currentStep > 0) {
+    currentStep--;
+    renderQuestion();
+  }
+}
+
+function showResults() {
+  showPage('results');
+
+  // Build profile tags from answers
+  const tagMap = {
+    oily: 'Oily Skin', dry: 'Dry Skin', combination: 'Combination Skin', sensitive: 'Sensitive Skin',
+    fair: 'Fair Tone', medium: 'Medium Tone', tan: 'Tan Tone', deep: 'Deep Tone',
+    acne: 'Acne-Prone', darkspots: 'Dark Spots', pigmentation: 'Pigmentation',
+    wrinkles: 'Anti-aging', dryness: 'Dehydrated', redness: 'Redness',
+    glow: 'Glow Goal', hydration: 'Hydration Goal', antiaging: 'Anti-Aging Goal',
+    eventone: 'Even Tone Goal', acnecontrol: 'Acne Control', barrier: 'Barrier Repair',
+    korean: 'K-Beauty', drugstore: 'Drugstore', luxury: 'Luxury', natural: 'Natural/Organic',
+    budget: 'Budget-Friendly', midrange: 'Mid-Range', premium: 'Premium',
+  };
+
+  const allSelected = Object.values(answers).flat();
+  const tags = [...new Set(allSelected)].map(v => tagMap[v]).filter(Boolean).slice(0, 6);
+
+  document.getElementById('profileTags').innerHTML = tags.map(t =>
+    `<span class="profile-tag">${t}</span>`).join('');
+
+  renderProducts('all');
+}
+
+function renderProducts(filter) {
+  const allSelected = Object.values(answers).flat();
+
+  let filtered = products.filter(p => {
+    if (filter !== 'all' && p.category !== filter) return false;
+    return true;
+  });
+
+  // Score by tag match
+  filtered = filtered.map(p => ({
+    ...p,
+    score: p.tags.filter(t => allSelected.includes(t) || t === 'all').length
+  })).sort((a, b) => b.score - a.score);
+
+  document.getElementById('productsGrid').innerHTML = filtered.map((p, i) => `
+    <div class="product-card" style="animation-delay:${i * 0.08}s">
+      <div class="product-img" style="background:${p.bg}">${p.emoji}</div>
+      <div class="product-body">
+        <div class="product-tags">
+          ${p.brand.split('·').map(t => `<span class="product-tag">${t.trim()}</span>`).join('')}
+        </div>
+        <div class="product-name">${p.name}</div>
+        <div class="product-reason">${p.reason}</div>
+        <div class="product-price">${p.price}</div>
+        <a class="btn-amazon" href="${p.amazon}" target="_blank">
+          <span class="amazon-icon">📦</span> View on Amazon
+        </a>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterProducts(filter, el) {
+  document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  renderProducts(filter);
+}
+</script>
+</body>
+</html>
